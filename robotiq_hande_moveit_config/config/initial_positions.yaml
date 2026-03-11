@@ -1,0 +1,4 @@
+# Default initial positions for robotiq_hande's ros2_control fake system
+
+initial_positions:
+  finger_joint: 0

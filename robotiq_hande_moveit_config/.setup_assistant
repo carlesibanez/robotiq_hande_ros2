@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: robotiq_hande_description
+    relative_path: urdf/robotiq_hande.urdf.xacro
+  srdf:
+    relative_path: config/robotiq_hande.srdf
+  package_settings:
+    author_name: Carles Ibanez trullen
+    author_email: ciitr@dtu.dk
+    generated_timestamp: 1772726967
