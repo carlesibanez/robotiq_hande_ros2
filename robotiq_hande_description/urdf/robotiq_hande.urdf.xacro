@@ -166,12 +166,14 @@
   <!-- Camera -->
   <link name="camera_link">
     <visual>
+    <origin xyz="0 0 0" rpy="0 ${pi/2} 0"/>
       <geometry>
         <mesh filename="package://closed_loop_dalsa_description/meshes/realsense_D405.stl"/>
       </geometry>
       <material name="black"><color rgba="0.1 0.1 0.1 1.0"/></material>
     </visual>
     <collision>
+    <origin xyz="0 0 0" rpy="0 ${pi/2} 0"/>
       <geometry>
         <mesh filename="package://closed_loop_dalsa_description/meshes/realsense_D405.stl"/>
       </geometry>
@@ -185,7 +187,7 @@
   <joint name="camera_joint" type="fixed">
     <parent link="camera_mount"/>
     <child link="camera_link"/>
-    <origin xyz="0.01 0 0.023" rpy="0 ${95*pi/180} 0"/>
+    <origin xyz="0.01 0 0.023" rpy="0 ${5*pi/180} 0"/>
   </joint>
 
   <link name="camera_link_optical"/>
@@ -193,10 +195,10 @@
   <joint name="camera_optical_joint" type="fixed">
     <parent link="camera_link"/>
     <child link="camera_link_optical"/>
-    <origin xyz="0 0 0" rpy=" 0 ${-pi/2} 0"/>
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
   </joint>
 
-  <gazebo reference="camera_link_optical">
+  <gazebo reference="camera_link">
     <sensor name="wrist_camera" type="rgbd_camera">
         <camera>
           <horizontal_fov>1.047</horizontal_fov>
@@ -205,7 +207,7 @@
             <height>240</height>
           </image>
           <clip><near>0.1</near><far>10</far></clip>
-          <optical_frame_id>camera_link_optical</optical_frame_id>
+          <optical_frame_id>camera_link</optical_frame_id>
         </camera>
         <always_on>1</always_on>
         <update_rate>10</update_rate>
