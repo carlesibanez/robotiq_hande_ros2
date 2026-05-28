@@ -79,22 +79,22 @@
   <joint name="tcp_joint" type="fixed">
     <parent link="gripper_body"/>
     <child link="tcp_link"/>
-    <origin xyz="0 0 0.13" rpy="0 0 0"/> 
+    <origin xyz="-0.0071 0 0.174" rpy="0 ${pi/4} ${pi}"/>
   </joint>
 
   <!-- Fingers -->
   <link name="finger1">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 -0.025 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotiq_hande_description/meshes/finger1_v2.stl"/>
+        <mesh filename="package://robotiq_hande_description/meshes/finger-full-v3-right.stl"/>
       </geometry>
       <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
     </visual>
     <collision>
-      <origin xyz="0.01 -0.076 0.04" rpy="0 0 0"/> 
+      <origin xyz="0.005 -0.078 0.09" rpy="0 ${-pi/4} 0"/> 
       <geometry>
-        <box size="0.02 0.002 0.06" /> 
+        <box size="0.01 0.002 0.02" /> 
       </geometry>
     </collision>
     <inertial>
@@ -112,16 +112,16 @@
 
    <link name="finger2">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="0 0.025 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotiq_hande_description/meshes/finger1_v2.stl"/>
+        <mesh filename="package://robotiq_hande_description/meshes/finger-full-v3-left.stl"/>
       </geometry>
       <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
     </visual>
     <collision>
-      <origin xyz="0.01 -0.076 0.04" rpy="0 0 0"/> 
+      <origin xyz="-0.02 0.078 0.09" rpy="0 ${-pi/4} 0"/> 
       <geometry>
-        <box size="0.02 0.002 0.06" /> 
+        <box size="0.01 0.002 0.02" /> 
       </geometry>
     </collision>
     <inertial>
@@ -133,9 +133,9 @@
   <joint name="finger2_joint" type="prismatic">
      <parent link="gripper_body"/>
      <child link="finger2"/>
-     <origin xyz="0.01443 -0.011 0.0839" rpy="0 0 ${pi}"/>
-     <axis xyz="0 1 0"/><limit lower="-0.003" upper="0.025" effort="500" velocity="0.1" acceleration="0.1"/> 
-     <mimic joint="finger_joint" multiplier="1.0" offset="0.0"/>
+     <origin xyz="0.01443 -0.011 0.0839" rpy="0 0 0"/>
+     <axis xyz="0 1 0"/><limit lower="-0.025" upper="0.003" effort="500" velocity="0.1" acceleration="0.1"/> 
+     <mimic joint="finger_joint" multiplier="-1.0" offset="0.0"/>
   </joint>
 
 
