@@ -8,6 +8,11 @@
     <!-- Import control_xacro -->
     <xacro:include filename="robotiq_hande.ros2_control.xacro" />
 
+    <link name="world"/>
+
+    <xacro:robotiq_hande_gripper parent="world" sim_gazebo="false">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:robotiq_hande_gripper>
 
     <xacro:robotiq_hande_ros2_control name="FakeSystem" initial_positions_file="$(arg initial_positions_file)"/>
 

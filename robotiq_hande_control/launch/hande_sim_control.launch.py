@@ -1,8 +1,8 @@
 import os
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, RegisterEventHandler
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.event_handlers import OnProcessExit
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 import xacro
@@ -10,8 +10,8 @@ import xacro
 def generate_launch_description():
     desc_pkg_path = get_package_share_directory('robotiq_hande_description')
     
-    # FIX 2: Tell Gazebo where to find your custom meshes
-    model_path = os.path.dirname(desc_pkg_path) # Goes up to install/share
+    # Tell Gazebo where to find custom meshes
+    model_path = os.path.dirname(desc_pkg_path)
     if 'GZ_SIM_RESOURCE_PATH' in os.environ:
         os.environ['GZ_SIM_RESOURCE_PATH'] += f":{model_path}"
     else:
@@ -21,14 +21,12 @@ def generate_launch_description():
     doc = xacro.process_file(xacro_file)
     robot_desc = doc.toprettyxml(indent='  ')
 
-    # FIX 1: Launch Gazebo properly using the ROS 2 wrapper
     gz_sim_launch = os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gz_sim_launch),
         launch_arguments={
             "gz_args": "-r empty.sdf --physics-engine gz-physics-bullet-featherstone-plugin"
         }.items(),
-        # launch_arguments={'gz_args': '-r empty.sdf'}.items()
     )
 
     node_robot_state_publisher = Node(
@@ -74,5 +72,5 @@ def generate_launch_description():
                 target_action=spawn_entity,
                 on_exit=[load_jsb, load_gripper_ctrl],
             )
-        )
+        ),
     ])
