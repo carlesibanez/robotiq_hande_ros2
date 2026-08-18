@@ -9,14 +9,16 @@ import xacro
 
 def generate_launch_description():
     desc_pkg_path = get_package_share_directory('robotiq_hande_description')
+    control_pkg_path = get_package_share_directory('robotiq_hande_control')
     
     # Tell Gazebo where to find custom meshes
-    model_path = os.path.dirname(desc_pkg_path)
+    model_paths = [os.path.dirname(desc_pkg_path)]
     if 'GZ_SIM_RESOURCE_PATH' in os.environ:
-        os.environ['GZ_SIM_RESOURCE_PATH'] += f":{model_path}"
+        os.environ['GZ_SIM_RESOURCE_PATH'] += f":{':'.join(model_paths)}"
     else:
-        os.environ['GZ_SIM_RESOURCE_PATH'] = model_path
+        os.environ['GZ_SIM_RESOURCE_PATH'] = ":".join(model_paths)
 
+    world_file = os.path.join(control_pkg_path, 'worlds', 'empty_sensors.sdf')
     xacro_file = os.path.join(desc_pkg_path, 'urdf', 'gripper.urdf.xacro')
     doc = xacro.process_file(xacro_file)
     robot_desc = doc.toprettyxml(indent='  ')
@@ -25,7 +27,7 @@ def generate_launch_description():
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(gz_sim_launch),
         launch_arguments={
-            "gz_args": "-r empty.sdf --physics-engine gz-physics-bullet-featherstone-plugin"
+            "gz_args": f"-r {world_file} --physics-engine gz-physics-bullet-featherstone-plugin"
         }.items(),
     )
 
@@ -55,16 +57,28 @@ def generate_launch_description():
         arguments=["gripper_controller", "--controller-manager", "/controller_manager"],
     )
 
-    clock_bridge = Node(
+    clock_and_camera_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            '/wrist_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
+            '/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
+        ],
+        output='screen'
+    )
+
+    image_bridge = Node(
+        package='ros_gz_image',
+        executable='image_bridge',
+        arguments=['/wrist_camera/image', '/wrist_camera/depth_image'],
         output='screen'
     )
 
     return LaunchDescription([
         gazebo,
-        clock_bridge,
+        clock_and_camera_bridge,
+        image_bridge,
         node_robot_state_publisher,
         spawn_entity,
         RegisterEventHandler(
