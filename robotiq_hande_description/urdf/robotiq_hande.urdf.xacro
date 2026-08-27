@@ -105,6 +105,62 @@
       <mimic joint="finger_joint" multiplier="1.0" offset="0.0"/>
     </joint>
 
+    <!-- Top Finger (attached to Left Fingerbase) -->
+    <link name="top_finger">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/top-finger-v1.stl"/>
+        </geometry>
+        <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/top-finger-v1.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.03"/>
+        <origin xyz="0.006 -0.021 0.037" rpy="0 0 0"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      </inertial>
+    </link>
+
+    <joint name="top_finger_joint" type="fixed">
+      <parent link="left_fingerbase"/>
+      <child link="top_finger"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Bottom Finger (attached to Right Fingerbase) -->
+    <link name="bottom_finger">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/bottom-finger-v1.stl"/>
+        </geometry>
+        <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/bottom-finger-v1.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.03"/>
+        <origin xyz="-0.022 0.021 0.037" rpy="0 0 0"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      </inertial>
+    </link>
+
+    <joint name="bottom_finger_joint" type="fixed">
+      <parent link="right_fingerbase"/>
+      <child link="bottom_finger"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
     <!-- Camera Mount -->
     <link name="camera_mount">
       <visual>
