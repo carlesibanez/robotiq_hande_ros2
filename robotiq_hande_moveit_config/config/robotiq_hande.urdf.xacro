@@ -3,7 +3,7 @@
     <xacro:arg name="initial_positions_file" default="initial_positions.yaml" />
 
     <!-- Import robotiq_hande urdf file -->
-    <xacro:include filename="$(find robotiq_hande_description)/urdf/robotiq_hande.urdf.xacro" />
+    <xacro:include filename="$(find robotiq_hande_description)/urdf/robotiq_hande_macro.xacro" />
 
     <!-- Import control_xacro -->
     <xacro:include filename="robotiq_hande.ros2_control.xacro" />

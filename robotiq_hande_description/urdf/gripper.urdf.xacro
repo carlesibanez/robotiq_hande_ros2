@@ -1,13 +1,19 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro" name="robotiq_hande">
 
-  <xacro:include filename="$(find robotiq_hande_description)/urdf/robotiq_hande.urdf.xacro" />
+  <!-- Include the split macros -->
+  <xacro:include filename="$(find robotiq_hande_description)/urdf/robotiq_hande_macro.xacro" />
+  <xacro:include filename="$(find robotiq_hande_description)/urdf/robotiq_hande.ros2_control.xacro" />
 
   <link name="world"/>
   
-  <xacro:robotiq_hande_gripper parent="world" sim_gazebo="true">
+  <!-- 1. Physical Geometry (Removed the old sim_gazebo flag) -->
+  <xacro:robotiq_hande_gripper parent="world">
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:robotiq_hande_gripper>
+
+  <!-- 2. Control and Sensors (Passing sim_gz for Jazzy) -->
+  <xacro:robotiq_hande_ros2_control sim_gz="true" />
 
   <gazebo>
     <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
