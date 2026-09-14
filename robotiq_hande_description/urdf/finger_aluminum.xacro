@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="finger_aluminum" params="parent_left:=left_fingerbase parent_right:=right_fingerbase tcp_parent:=gripper_body">
+
+    <!-- Tool Center Point (TCP) -->
+    <link name="tcp_link">
+      <inertial>
+        <mass value="0.001"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      </inertial>
+    </link>
+    <joint name="tcp_joint" type="fixed">
+      <parent link="${tcp_parent}"/>
+      <child link="tcp_link"/>
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Top Finger (attached to Left Fingerbase) -->
+    <link name="top_finger">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
+        </geometry>
+        <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.03"/>
+        <origin xyz="0.006 -0.021 0.037" rpy="0 0 0"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      </inertial>
+    </link>
+
+    <joint name="top_finger_joint" type="fixed">
+      <parent link="${parent_left}"/>
+      <child link="top_finger"/>
+      <origin xyz="0 0 0" rpy="0 0 ${-pi/2}"/>
+    </joint>
+
+    <!-- Bottom Finger (attached to Right Fingerbase) -->
+    <link name="bottom_finger">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
+        </geometry>
+        <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.03"/>
+        <origin xyz="-0.022 0.021 0.037" rpy="0 0 0"/>
+        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
+      </inertial>
+    </link>
+
+    <joint name="bottom_finger_joint" type="fixed">
+      <parent link="${parent_right}"/>
+      <child link="bottom_finger"/>
+      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
+    </joint>
+
+  </xacro:macro>
+</robot>

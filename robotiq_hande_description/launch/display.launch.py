@@ -1,6 +1,7 @@
 import os
 from launch import LaunchDescription
-from launch.substitutions import Command
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import Command, LaunchConfiguration
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from ament_index_python.packages import get_package_share_directory
@@ -10,8 +11,18 @@ def generate_launch_description():
     pkg_share = get_package_share_directory(pkg_name)
     urdf_path = os.path.join(pkg_share, 'urdf', 'gripper.urdf.xacro')
 
+    finger_type_arg = DeclareLaunchArgument(
+        'finger_type',
+        default_value='aluminum',
+        description='Type of fingers to mount: aluminum (default) or v1'
+    )
+    finger_type = LaunchConfiguration('finger_type')
+
     # Parse the XACRO file into a standard URDF string
-    robot_description = ParameterValue(Command(['xacro ', urdf_path]), value_type=str)
+    robot_description = ParameterValue(
+        Command(['xacro ', urdf_path, ' finger_type:=', finger_type]),
+        value_type=str
+    )
 
     # Node: Robot State Publisher
     rsp_node = Node(
@@ -38,6 +49,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        finger_type_arg,
         rsp_node,
         jsp_gui_node,
         rviz_node

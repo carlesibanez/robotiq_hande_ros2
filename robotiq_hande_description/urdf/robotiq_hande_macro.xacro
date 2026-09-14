@@ -1,6 +1,11 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="robotiq_hande">
-  <xacro:macro name="robotiq_hande_gripper" params="parent *origin sim_gazebo:=false">
+
+  <!-- Include finger macros -->
+  <xacro:include filename="$(find robotiq_hande_description)/urdf/finger_aluminum.xacro" />
+  <xacro:include filename="$(find robotiq_hande_description)/urdf/finger_v1.xacro" />
+
+  <xacro:macro name="robotiq_hande_gripper" params="parent *origin sim_gazebo:=false finger_type:=aluminum">
   
     <!-- Gripper Base Joint connecting parent to gripper_body -->
     <joint name="gripper_base_joint" type="fixed">
@@ -37,28 +42,7 @@
       </inertial>
     </link>
 
-    <!-- Tool Center Point (TCP) -->
-    <link name="tcp_link">
-      <inertial>
-        <mass value="0.001"/>
-        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-      </inertial>
-      <!-- <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <sphere radius="0.001"/>
-        </geometry>
-      </collision> -->
-    </link>
-    <joint name="tcp_joint" type="fixed">
-      <parent link="gripper_body"/>
-      <child link="tcp_link"/>
-      <origin xyz="0 0 0.15" rpy="0 0 0"/>
-    </joint>
 
-    <!-- <gazebo reference="tcp_joint">
-      <preserveFixedJoint>true</preserveFixedJoint>
-    </gazebo> -->
 
     <!-- Left Fingerbase -->
     <link name="left_fingerbase">
@@ -129,61 +113,13 @@
       </plugin>
     </gazebo> -->
 
-    <!-- Top Finger (attached to Left Fingerbase) -->
-    <link name="top_finger">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
-        </geometry>
-        <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
-      </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
-        </geometry>
-      </collision>
-      <inertial>
-        <mass value="0.03"/>
-        <origin xyz="0.006 -0.021 0.037" rpy="0 0 0"/>
-        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-      </inertial>
-    </link>
-
-    <joint name="top_finger_joint" type="fixed">
-      <parent link="left_fingerbase"/>
-      <child link="top_finger"/>
-      <origin xyz="0 0 0" rpy="0 0 ${-pi/2}"/>
-    </joint>
-
-    <!-- Bottom Finger (attached to Right Fingerbase) -->
-    <link name="bottom_finger">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
-        </geometry>
-        <material name="gray"><color rgba="0.4 0.4 0.4 1.0"/></material>
-      </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
-        <geometry>
-          <mesh filename="package://robotiq_hande_description/meshes/alum-finger.stl"/>
-        </geometry>
-      </collision>
-      <inertial>
-        <mass value="0.03"/>
-        <origin xyz="-0.022 0.021 0.037" rpy="0 0 0"/>
-        <inertia ixx="0.00001" ixy="0" ixz="0" iyy="0.00001" iyz="0" izz="0.00001"/>
-      </inertial>
-    </link>
-
-    <joint name="bottom_finger_joint" type="fixed">
-      <parent link="right_fingerbase"/>
-      <child link="bottom_finger"/>
-      <origin xyz="0 0 0" rpy="0 0 ${pi/2}"/>
-    </joint>
+    <!-- Finger pair and TCP selection -->
+    <xacro:if value="${finger_type in ['aluminum', 'aluminium']}">
+      <xacro:finger_aluminum parent_left="left_fingerbase" parent_right="right_fingerbase" tcp_parent="gripper_body" />
+    </xacro:if>
+    <xacro:if value="${finger_type in ['v1', 'finger_v1', 'top_bottom_v1']}">
+      <xacro:finger_v1 parent_left="left_fingerbase" parent_right="right_fingerbase" tcp_parent="gripper_body" />
+    </xacro:if>
 
     <!-- Camera Mount -->
     <link name="camera_mount">

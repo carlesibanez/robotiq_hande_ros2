@@ -7,8 +7,11 @@
 
   <link name="world"/>
   
+  <!-- Finger configuration parameter -->
+  <xacro:arg name="finger_type" default="aluminum" />
+
   <!-- 1. Physical Geometry (Removed the old sim_gazebo flag) -->
-  <xacro:robotiq_hande_gripper parent="world">
+  <xacro:robotiq_hande_gripper parent="world" finger_type="$(arg finger_type)">
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:robotiq_hande_gripper>
 
