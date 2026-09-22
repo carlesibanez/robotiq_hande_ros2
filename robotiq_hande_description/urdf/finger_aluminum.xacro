@@ -12,7 +12,7 @@
     <joint name="tcp_joint" type="fixed">
       <parent link="${tcp_parent}"/>
       <child link="tcp_link"/>
-      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <origin xyz="0 0 0.15" rpy="0 ${pi} 0"/>
     </joint>
 
     <!-- Top Finger (attached to Left Fingerbase) -->
