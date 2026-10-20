@@ -1,11 +1,15 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, RegisterEventHandler
+from launch.conditions import IfCondition
 from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
+from launch_ros.substitutions import FindPackageShare
 from ament_index_python.packages import get_package_share_directory
-import xacro
+
 
 def generate_launch_description():
     desc_pkg_path = get_package_share_directory('robotiq_hande_description')
@@ -18,10 +22,30 @@ def generate_launch_description():
     else:
         os.environ['GZ_SIM_RESOURCE_PATH'] = ":".join(model_paths)
 
+    declare_camera = DeclareLaunchArgument(
+        'use_camera',
+        default_value='true',
+        description='Whether to load wrist camera and bridges',
+    )
+    use_camera = LaunchConfiguration('use_camera')
+
     world_file = os.path.join(control_pkg_path, 'worlds', 'empty_sensors.sdf')
-    xacro_file = os.path.join(desc_pkg_path, 'urdf', 'gripper.urdf.xacro')
-    doc = xacro.process_file(xacro_file)
-    robot_desc = doc.toprettyxml(indent='  ')
+    urdf_file = PathJoinSubstitution([
+        FindPackageShare('robotiq_hande_description'),
+        'urdf',
+        'gripper.urdf.xacro',
+    ])
+
+    robot_desc = ParameterValue(
+        Command([
+            PathJoinSubstitution([FindExecutable(name='xacro')]),
+            ' ',
+            urdf_file,
+            ' use_sim:=true',
+            ' use_camera:=', use_camera,
+        ]),
+        value_type=str,
+    )
 
     gz_sim_launch = os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
     gazebo = IncludeLaunchDescription(
@@ -57,27 +81,37 @@ def generate_launch_description():
         arguments=["gripper_controller", "--controller-manager", "/controller_manager"],
     )
 
-    clock_and_camera_bridge = Node(
+    clock_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=['/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'],
+        output='screen'
+    )
+
+    camera_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
         arguments=[
-            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
             '/wrist_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked',
             '/wrist_camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
         ],
-        output='screen'
+        output='screen',
+        condition=IfCondition(use_camera),
     )
 
     image_bridge = Node(
         package='ros_gz_image',
         executable='image_bridge',
         arguments=['/wrist_camera/image', '/wrist_camera/depth_image'],
-        output='screen'
+        output='screen',
+        condition=IfCondition(use_camera),
     )
 
     return LaunchDescription([
+        declare_camera,
         gazebo,
-        clock_and_camera_bridge,
+        clock_bridge,
+        camera_bridge,
         image_bridge,
         node_robot_state_publisher,
         spawn_entity,
