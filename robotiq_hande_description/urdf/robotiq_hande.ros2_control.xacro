@@ -78,21 +78,17 @@
         <ros2_control name="GripperHardware" type="system">
           <hardware>
             <plugin>robotiq_driver/RobotiqGripperHardwareInterface</plugin>
+            <param name="gripper_profile">hand_e</param>
+            <param name="gripper_closed_position">0.025</param>
             <param name="COM_port">${com_port}</param>
-            <param name="baud_rate">115200</param>
-            <param name="slave_id">9</param>
+            <param name="baudrate">115200</param>
+            <param name="slave_address">9</param>
           </hardware>
           <joint name="finger_joint">
             <command_interface name="position" />
             <state_interface name="position">
               <param name="initial_value">0.0</param>
             </state_interface>
-            <state_interface name="velocity" />
-          </joint>
-          <joint name="finger2_joint">
-            <param name="mimic">finger_joint</param>
-            <param name="multiplier">1</param>
-            <state_interface name="position" />
             <state_interface name="velocity" />
           </joint>
         </ros2_control>
